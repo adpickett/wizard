@@ -1,0 +1,41 @@
+import React from "react";
+import { Line } from "rc-progress";
+import PropTypes from "prop-types";
+const ProgressBar = props => {
+  let color = "";
+
+  switch (true) {
+    case props.percent >= 5 && props.percent <= 30:
+      color = "#f8c407";
+      break;
+    case props.percent >= 31 && props.percent <= 60:
+      color = "#c0e300";
+      break;
+    case props.percent >= 61 && props.percent <= 90:
+      color = "#95e76b";
+      break;
+    case props.percent === 100:
+      color = "#34c639";
+      break;
+    default:
+      color = "#df1616";
+  }
+
+  return (
+    <>
+      <div className="text-center">
+        <h5 className="mt-3" style={{ fontSize: "20px", color: color }}>
+          Completion Process: {props.percent}% Completed
+        </h5>
+      </div>
+      <Line percent={props.percent} strokeWidth="2" className="mt-3" />
+    </>
+  );
+};
+// }
+
+export default ProgressBar;
+
+ProgressBar.propTypes = {
+  percent: PropTypes.number
+};
