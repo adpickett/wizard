@@ -1,0 +1,125 @@
+import React from "react";
+import AddProvider from "./AddProvider";
+import PracticeFormV2 from "../practices/PracticeFormV2.jsx";
+import LocationForm from "../locations/LocationForm.jsx";
+import StepFour from "./StepFour";
+import StepFive from "./StepFive";
+import ProgressBar from "./ProgressBar";
+
+var calculatePercentLength = 0;
+
+export class Steps extends React.Component {
+  state = {
+    step: 0,
+    stepComponents: [],
+    currentData: [],
+    percent: 0
+  };
+
+  componentDidMount() {
+    this.setState(
+      {
+        stepComponents: [
+          <AddProvider key={"step-1"} changeStep={this.changeCurrentStep} />,
+          <PracticeFormV2
+            key={"step-2"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+          />,
+          <LocationForm
+            key={"step-3"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+          />,
+          <StepFour
+            key={"step-4"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+          />,
+          <StepFive
+            key={"step-5"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+          />
+        ]
+      },
+      () => {
+        calculatePercentLength = Math.floor(
+          100 / this.state.stepComponents.length
+        );
+      }
+    );
+  }
+
+  changeCurrentStep = data => {
+    let currentStep = this.state.step;
+    currentStep++;
+    this.setState({
+      step: currentStep,
+      currentData: this.state.currentData.concat(data),
+      percent:
+        this.state.percent > 100
+          ? 100
+          : this.state.percent + calculatePercentLength
+    });
+  };
+
+  changePreviousStep = () => {
+    let currentStep = this.state.step;
+    currentStep--;
+    let currentArray = this.state.currentData;
+    let currentObj = currentArray.pop();
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        step: currentStep,
+        percent:
+          currentStep === 0 ? 0 : this.state.percent - calculatePercentLength,
+        stepComponents: [
+          <AddProvider
+            key={"step-1"}
+            changeStep={this.changeCurrentStep}
+            editData={currentObj}
+          />,
+          <PracticeFormV2
+            key={"step-2"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+            editData={currentObj}
+          />,
+          <LocationForm
+            key={"step-3"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+            editData={currentObj}
+          />,
+          <StepFour
+            key={"step-4"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+            editData={currentObj}
+          />,
+          <StepFive
+            key={"step-5"}
+            changeStep={this.changeCurrentStep}
+            prevStep={this.changePreviousStep}
+            editData={currentObj}
+          />
+        ]
+      };
+    });
+  };
+  render() {
+    return (
+      <div className="container">
+        <div className="row justify-content-center d-flex">
+          <div className="card col-xs-12 col-xl-8">
+            <ProgressBar percent={this.state.percent} />
+            <div>{this.state.stepComponents[this.state.step]}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+export default Steps;
