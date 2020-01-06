@@ -1,0 +1,290 @@
+import React from "react";
+import { Form, FormGroup, Label, Button } from "reactstrap";
+import { Formik, Field } from "formik";
+// import * as Yup from "yup";
+import logger from "sabio-debug";
+import PropTypes from "prop-types";
+import FileUpload from "../file/FileUpload";
+
+const _logger = logger.extend("StepTwo");
+
+class AddPractice extends React.Component {
+  state = {
+    formData: {
+      name: "",
+      locations: [],
+      detailLocations: [],
+      phone: "",
+      fax: "",
+      email: "",
+      siteUrl: "",
+      scheduleId: 0,
+      isAdaAccessible: 0,
+      genderAccepted: 0,
+      primaryImage: {
+        id: 0,
+        fileName: "",
+        url: "",
+        fileTypeId: 0
+      },
+      facilityTypeId: 0,
+      dateCreated: "",
+      dateModified: "",
+      createdBy: 0,
+      modifiedBy: 0
+    },
+    lookupTableData: {
+      facilities: [],
+      genders: [],
+      files: [],
+      locations: []
+    },
+    states: [],
+    mappedStates: [],
+  
+    }
+  };
+
+  componentDidMount() {
+    if (this.props.editData) {
+      this.setState({ formData: this.props.editData })
+    } 
+  };
+
+  handleSubmit = (values, { resetForm }) => {
+    _logger("Values are ", values);
+    //if you want to reset form you can use Formik's own method but you need to pass the object to reset the form to
+    this.props.changeStep(values)
+    resetForm(this.state.formData)
+  };
+
+  render() {
+    return (
+      <React.Fragment>
+        <Formik
+          enableReinitialize={true}
+          //validationSchema={}
+          initialValues={this.state.formData}
+          onSubmit={this.handleSubmit}
+        >
+          {props => {
+            const {
+              values,
+              touched,
+              errors,
+              handleSubmit,
+              isInitialValid,
+              isSubmitting
+            } = props;
+            return (
+              <Form onSubmit={handleSubmit} className="col-sm-12 pt-4">
+                <h5 style={{ fontSize: "20px" }}>Add Practice</h5>
+                <FormGroup>
+                  <Label>Name</Label>
+                  <Field
+                    name="name"
+                    type="text"
+                    values={values.name}
+                    placeholder="Name"
+                    autoComplete="off"
+                    className={
+                      errors.name && touched.name
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.name && touched.name && (
+                    <span className="input-feedback">{errors.name}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Phone</Label>
+                  <Field
+                    name="phone"
+                    type="text"
+                    values={values.phone}
+                    placeholder="Phone Number"
+                    autoComplete="off"
+                    className={
+                      errors.phone && touched.phone
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.phone && touched.phone && (
+                    <span className="input-feedback">{errors.phone}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Fax</Label>
+                  <Field
+                    name="fax"
+                    type="text"
+                    component="select"
+                    values={values.fax}
+                    className={
+                      errors.fax && touched.fax
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.fax && touched.fax && (
+                    <span className="input-feedback">{errors.fax}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Email</Label>
+                  <Field
+                    name="email"
+                    type="email"
+                    component="select"
+                    values={values.email}
+                    className={
+                      errors.email && touched.email
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.email && touched.email && (
+                    <span className="input-feedback">{errors.email}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Website Url</Label>
+                  <Field
+                    name="siteUrl"
+                    type="url"
+                    component="select"
+                    values={values.siteUrl}
+                    className={
+                      errors.siteUrl && touched.siteUrl
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.siteUrl && touched.siteUrl && (
+                    <span className="input-feedback">{errors.siteUrl}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Facility</Label>
+                  <Field
+                    name="facilityTypeId"
+                    component="select"
+                    values={values.facilityTypeId}
+                    className={
+                      errors.facilityTypeId && touched.facilityTypeId
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                    as="select"
+                  >
+                  </Field>
+                  {errors.facilityTypeId && touched.facilityTypeId && (
+                    <span className="input-feedback">{errors.facilityTypeId}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Schedule Id</Label>
+                  <Field
+                    name="scheduleId"
+                    type="number"
+                    values={values.scheduleId}
+                    className={
+                      errors.scheduleId && touched.scheduleId
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.scheduleId && touched.scheduleId && (
+                    <span className="input-feedback">{errors.scheduleId}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>ADA Accessible</Label>
+                  <Field
+                    name="isAdaAccessible"
+                    type="number"
+                    values={values.isAdaAccessible}
+                    className={
+                      errors.isAdaAccessible && touched.isAdaAccessible
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.isAdaAccessible && touched.isAdaAccessible && (
+                    <span className="input-feedback">{errors.isAdaAccessible}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Genders Accepted</Label>
+                  <Field
+                    name="gendersAccepted"
+                    type="number"
+                    values={values.gendersAccepted}
+                    className={
+                      errors.gendersAccepted && touched.gendersAccepted
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  >
+                  </Field>
+                  {errors.gendersAccepted && touched.gendersAccepted && (
+                    <span className="input-feedback">{errors.gendersAccepted}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Avatar</Label>
+                  <FileUpload
+                    onChange={image => setFieldValue("siteUrl", image[0])}
+                  />
+                </FormGroup>
+                <div className="row mb-3">
+                  <div className="col-6">
+                    <div className="row d-flex justify-content-start">
+                      <Button
+                        type="submit"
+                        onClick={this.props.prevStep}
+                        className="mr-3"
+                      >
+                        Previous
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="row d-flex justify-content-end">
+                      <Button
+                        type="submit"
+                        disabled={isInitialValid || isSubmitting}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
+      </React.Fragment>
+    );
+  }
+
+export default AddPractice;
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
