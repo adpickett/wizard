@@ -1,0 +1,356 @@
+import React from "react";
+import { Form, FormGroup, Label, Button } from "reactstrap";
+import { Formik, Field } from "formik";
+import logger from "sabio-debug";
+import PropTypes from "prop-types";
+import { stepWizardStepOne } from "../Providers/providerSchema";
+import TableTypeServices from "../../services/lookupTableService";
+import FileUpload from "../file/FileUpload";
+// import * as providersService from "../../services/providersService";
+
+const _logger = logger.extend("StepOne");
+
+class AddProvider extends React.Component {
+  state = {
+    formData: {
+      titleTypeId: "",
+      firstName: "",
+      mi: "",
+      lastName: "",
+      genderTypeId: "",
+      phone: "",
+      fax: "",
+      npi: "",
+      genderAccepted: "",
+      avatarUrl: ""
+    },
+    mappedTitleTypes: [],
+    mappedGenderTypes: []
+  };
+
+  componentDidMount() {
+    if (this.props.editData) {
+      this.setState({ formData: this.props.editData });
+    }
+
+    this.getTitleTypes();
+    this.getGenderTypes();
+  }
+
+  handleSubmit = (values, { resetForm }) => {
+    this.props.changeStep(values);
+    resetForm(this.state.formData);
+    // providersService
+    //   .addProvider(values)
+    //   .then(this.onAddProviderSuccess)
+    //   .catch(this.onAddProviderError);
+  };
+
+  getTitleTypes = () => {
+    let promiseArr = [];
+    promiseArr.push(TableTypeServices("titles"));
+    _logger("titleTypes", promiseArr);
+    Promise.all(promiseArr)
+      .then(this.onRetrieveTitleSuccess)
+      .catch(this.genericErrorMsg);
+  };
+
+  getGenderTypes = () => {
+    let promiseArr = [];
+    promiseArr.push(TableTypeServices("genders"));
+    _logger("genderTypes", promiseArr);
+    Promise.all(promiseArr)
+      .then(this.onRetrieveGenderSuccess)
+      .catch(this.genericErrorMsg);
+  };
+
+  onRetrieveTitleSuccess = response => {
+    _logger(response);
+    const titleArr = response[0].res.items;
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        mappedTitleTypes: titleArr.map(this.renderTitleTypes)
+      };
+    });
+  };
+
+  onRetrieveGenderSuccess = response => {
+    _logger(response);
+    const genderArr = response[0].res.items;
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        mappedGenderTypes: genderArr.map(this.renderGenderTypes)
+      };
+    });
+  };
+
+  genericErrorMsg = errResponse => {
+    _logger(errResponse, "There was an error");
+  };
+
+  renderTitleTypes = title => {
+    return (
+      <option key={title.id} value={title.id}>
+        {title.name}
+      </option>
+    );
+  };
+
+  renderGenderTypes = gender => {
+    return (
+      <option key={gender.id} value={gender.id}>
+        {gender.name}
+      </option>
+    );
+  };
+
+  onAddproviderSuccess = response => {
+    _logger("Success", response);
+  };
+
+  onAddProviderError = errResponse => {
+    _logger("There was an error!", errResponse);
+  };
+
+  render() {
+    return (
+      <>
+        <Formik
+          enableReinitialize
+          validationSchema={stepWizardStepOne}
+          initialValues={this.state.formData}
+          onSubmit={this.handleSubmit}
+        >
+          {props => {
+            const {
+              values,
+              touched,
+              errors,
+              setFieldValue,
+              handleSubmit,
+              isInitialValid,
+              isSubmitting
+            } = props;
+            return (
+              <Form onSubmit={handleSubmit} className="col-sm-12 pt-4">
+                <h5 style={{ fontSize: "20px" }}>Add Provider</h5>
+                <FormGroup>
+                  <Label>Title</Label>
+                  <Field
+                    name="titleTypeId"
+                    component="select"
+                    values={values.titleTypeId}
+                    label="Title"
+                    className={
+                      errors.titleTypeId && touched.titleTypeId
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                    as="select"
+                  >
+                    <option value="">Select Title</option>
+                    {this.state.mappedTitleTypes}
+                  </Field>
+                  {errors.titleTypeId && touched.titleTypeId && (
+                    <span className="input-feedback">{errors.titleTypeId}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>First Name</Label>
+                  <Field
+                    name="firstName"
+                    type="text"
+                    values={values.firstName}
+                    placeholder="First Name"
+                    autoComplete="off"
+                    className={
+                      errors.firstName && touched.firstName
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.firstName && touched.firstName && (
+                    <span className="input-feedback">{errors.firstName}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>M.I.</Label>
+                  <Field
+                    name="mi"
+                    type="text"
+                    values={values.mi}
+                    placeholder="Middle Initials"
+                    autoComplete="off"
+                    className={
+                      errors.mi && touched.mi
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.mi && touched.mi && (
+                    <span className="input-feedback">{errors.mi}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Last Name</Label>
+                  <Field
+                    name="lastName"
+                    type="text"
+                    values={values.lastName}
+                    placeholder="Last Name"
+                    autoComplete="off"
+                    className={
+                      errors.lastName && touched.lastName
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.lastName && touched.lastName && (
+                    <span className="input-feedback">{errors.lastName}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Gender</Label>
+                  <Field
+                    name="genderTypeId"
+                    component="select"
+                    values={values.genderTypeId}
+                    label="Gender"
+                    className={
+                      errors.genderTypeId && touched.genderTypeId
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                    as="select"
+                  >
+                    <option value="">Select Gender</option>
+                    {this.state.mappedGenderTypes}
+                  </Field>
+                  {errors.genderTypeId && touched.genderTypeId && (
+                    <span className="input-feedback">
+                      {errors.genderTypeId}
+                    </span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Avatar</Label>
+                  <FileUpload
+                    onChange={image => setFieldValue("avatarUrl", image[0])}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Phone</Label>
+                  <Field
+                    name="phone"
+                    type="text"
+                    values={values.phone}
+                    placeholder="Phone Number"
+                    autoComplete="off"
+                    className={
+                      errors.phone && touched.phone
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.phone && touched.phone && (
+                    <span className="input-feedback">{errors.phone}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Fax</Label>
+                  <Field
+                    name="fax"
+                    type="text"
+                    values={values.fax}
+                    placeholder="Fax"
+                    autoComplete="off"
+                    className={
+                      errors.fax && touched.fax
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.fax && touched.fax && (
+                    <span className="input-feedback">{errors.fax}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>NPI</Label>
+                  <Field
+                    name="npi"
+                    type="text"
+                    values={values.npi}
+                    placeholder="NPI"
+                    autoComplete="off"
+                    className={
+                      errors.npi && touched.npi
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                  />
+                  {errors.npi && touched.npi && (
+                    <span className="input-feedback">{errors.npi}</span>
+                  )}
+                </FormGroup>
+                <FormGroup>
+                  <Label>Patient Genders Accepted</Label>
+                  <Field
+                    name="genderAccepted"
+                    component="select"
+                    values={values.genderAccepted}
+                    label="Patient Genders Accepted"
+                    className={
+                      errors.genderAccepted && touched.genderAccepted
+                        ? "form-control error"
+                        : "form-control"
+                    }
+                    as="select"
+                  >
+                    <option value="">Select Patient Genders Accepted</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                    <option value="3">Non-binary</option>
+                    <option value="4">Not applicable</option>
+                    <option value="5">All genders</option>
+                    <option value="6">Other</option>
+                  </Field>
+                  {errors.genderAccepted && touched.genderAccepted && (
+                    <span className="input-feedback">
+                      {errors.genderAccepted}
+                    </span>
+                  )}
+                </FormGroup>
+                <div className="mb-3 d-flex justify-content-end">
+                  <Button
+                    type="submit"
+                    disabled={isInitialValid || isSubmitting}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
+      </>
+    );
+  }
+}
+export default AddProvider;
+AddProvider.propTypes = {
+  changeStep: PropTypes.func.isRequired,
+  editData: PropTypes.shape({
+    titleTypeId: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    mi: PropTypes.string,
+    lastName: PropTypes.string,
+    genderTypeId: PropTypes.string.isRequired,
+    phone: PropTypes.string.isRequired,
+    fax: PropTypes.string.isRequired,
+    npi: PropTypes.string.isRequired,
+    genderAccepted: PropTypes.string,
+    avatarUrl: PropTypes.string
+  })
+};
