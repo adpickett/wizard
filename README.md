@@ -1,6 +1,7 @@
-# wizard
+# Wizard
 A mulitstep form or "wizard"
 
+## Description
 I have made a multistep form that allows you to have several forms put together organized as steps. 
 For this repo, stepOne would be for adding a provider. StepTwo would add a practice and an option to add a location if one was not already attached to a given practice. Steps 3 through 5 are just filled with dummy data so you can see what the form would look like with more than 2 steps.
 
